@@ -1,1 +1,1 @@
-Empty branch from master.
+Empty branch from EmptyBranch with Test Objects.
