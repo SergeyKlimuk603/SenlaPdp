@@ -1,0 +1,20 @@
+<template>
+    <!-- source:
+        https://trailhead.salesforce.com/content/learn/modules/lightning-web-components-basics/create-lightning-web-components
+    -->
+    <template lwc:if={ready}>
+        <div id="display">
+            <div>Name: {name}</div>
+            <div>Description: {description}</div>
+            <div>Category: {category}</div>
+            <div>Material: {material}</div>
+            <div>Price: {price}</div>
+            <div><img src={pictureUrl}/></div>
+        </div>
+    </template>
+    <template lwc:else>
+        <div id="waiting">Loading...</div>
+    </template>
+
+    
+</template>

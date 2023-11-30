@@ -1,0 +1,25 @@
+<template>
+    <lightning-card title="passingInformation1">
+        <div class="slds-m-around_medium">
+            <p>
+                <b>variable1:</b> {variable1}
+            </p>
+            <p>
+                <b>variable2:</b> {variable2}
+            </p>
+            <lightning-input label="Variable1" value={variable1} onchange={changeHandler1}></lightning-input>
+        </div>
+    </lightning-card>
+
+
+    
+
+    <c-passing-information1_1 variable1_1={variable1}></c-passing-information1_1>
+
+
+
+    <c-passing-information1_2 
+            variable1_2={variable2} 
+            onmyevent = {myEventHandler}>
+    </c-passing-information1_2>
+</template>
