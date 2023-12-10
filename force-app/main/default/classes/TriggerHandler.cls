@@ -3,7 +3,16 @@
  */
 
 public virtual class TriggerHandler {
+    private static Integer TRIGGER_RUN_COUNT = 0;// {
+    //     get {
+    //         return TRIGGER_RUN_COUNT == null ? 0 : ++TRIGGER_RUN_COUNT;
+    //     }
+    //     set {}
+    // }
+
+    
     public void run() {
+        System.debug('-----TestObjectTriggerHandler runs!!! Count: ' + TRIGGER_RUN_COUNT++);
         switch on Trigger.operationType {
             when BEFORE_INSERT {
                 this.beforeInsert(Trigger.new);

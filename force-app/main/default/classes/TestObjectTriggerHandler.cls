@@ -1,69 +1,33 @@
 public with sharing class TestObjectTriggerHandler extends TriggerHandler {
-    // private static Boolean isActive = true;
-    private static Integer recursionLimit = 3;
-    private static Integer executionCount = 0;
-    private static Integer count = 0;
+
+    protected override void beforeInsert(List<SObject> newObjectsList) {
+        System.debug('-----beforeInsert');
+    }
 
     protected override void afterInsert(Map<Id, SObject> newObjectsMap) {
+        System.debug('-----afterInsert');
     }
 
     protected override void beforeUpdate(List<SObject> newObjectsList, Map<Id, SObject> oldObjectsMap) {
-        // if (!isActive) {
-        //     return;
-        // }
-
-        if (executionCount >= recursionLimit) {
-            return;
-        }
-
+        System.debug('-----beforeUpdate');
         List<TestObject__c> newList = newObjectsList;
 
         for (TestObject__c testObject : newList) {
             if (testObject.Name == 'TestTriggerRecursion') {
-                testObject.TextAreaField__c += '<p>beforeApdate Trigger' + count + '</p>';
-                update new TestObject__c(Id = 'a002t00000YVQghAAH');
+                //testObject.TextAreaField__c += '<p>beforeApdate Trigger' + count + '</p>';
             }
         }
-
-        //insert new TestObject__c(Name = 'triggerRecursionTest1');
     }
 
     protected override void afterUpdate(List<SObject> newObjectsList, Map<Id, SObject> oldObjectsMap) {
-        // if (!isActive) {
-        //     return;
-        // }
-
-        if (executionCount >= recursionLimit) {
-            executionCount = 0;
-            return;
-        }
-
-        List<TestObject__c> newList = newObjectsList;
-
-        List<TestObject__c> newSelectedList = [
-            SELECT Id, TextAreaField__c
-            FROM TestObject__c
-            WHERE Id IN :newList AND Name LIKE 'TestTriggerRecursion%'
-        ];
-
-        for (TestObject__c testObject : newSelectedList) {
-            testObject.TextAreaField__c += '<p>afterApdate Trigger' + count + '</p>';
-        }
-
-        executionCount++;
-        count++;
-        update newSelectedList;
-        //updateWithoutTrigger(newSelectedList);
+        System.debug('-----afterUpdate');
     }
 
-    // private static void updateWithoutTrigger(List<TestObject__c> testObjectsList) {
-    //     if (testObjectsList == null || testObjectsList.isEmpty()) {
-    //         return;
-    //     }
+    protected override void beforeDelete(Map<Id, SObject> oldObjectsMap) {
+        System.debug('-----beforeDelete');
+    }
 
-    //     Boolean isCurrentActive = isActive;
-    //     isActive = false;
-    //     update testObjectsList;
-    //     isActive = isCurrentActive;
-    // }
+    protected override void afterDelete(Map<Id, SObject> oldObjectsMap) {
+        System.debug('-----afterDelete');
+    }
 }
