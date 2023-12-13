@@ -9,9 +9,11 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
 
         isRecursionBeforeUpdate = true;
 
-        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+        List<TestObject__c> testObjects = Trigger.new;
 
-        testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
+        for(TestObject__c testObject : testObjects) {
+            testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
+        }
     }
 
     protected override void afterUpdate() {
@@ -21,12 +23,19 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
 
         isRecursionAfterUpdate = true;
 
-        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+        List<TestObject__c> testObjects = Trigger.new;
+        List<TestObject__c> testObjectsForUpdate = new List<TestObject__c>();
 
-        update new TestObject__c(
-            Id = testObject.Id, 
-            TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
-        );
+        for(TestObject__c testObject : testObjects) {
+            testObjectsForUpdate.add(
+                new TestObject__c(
+                    Id = testObject.Id, 
+                    TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
+                )
+            );
+        }    
+
+        update testObjectsForUpdate;
 
         isRecursionBeforeUpdate = false;
         isRecursionAfterUpdate = false;

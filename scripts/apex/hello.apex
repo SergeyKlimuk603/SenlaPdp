@@ -6,7 +6,7 @@ delete testObjectsForDelete;
 //---------------------------------------------------------------------------------------------
 // Create records
 List<TestObject__c> testObjectsForCreate = new List<TestObject__c>();
-Integer TESTOBJECT_AMOUNT = 2;
+Integer TESTOBJECT_AMOUNT = 250;
 for(Integer i = 0; i < TESTOBJECT_AMOUNT; i++) {
     testObjectsForCreate.add(new TestObject__c(Name = 'TestTriggerRecursion_' + i));
 }
