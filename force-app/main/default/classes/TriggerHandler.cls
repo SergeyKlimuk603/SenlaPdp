@@ -1,55 +1,46 @@
-/*
- * Родительский класс для всех объектов выполняющих какие-либо действия в триггерах
- */
 
 public virtual class TriggerHandler {
-    private static Integer TRIGGER_RUN_COUNT = 0;// {
-    //     get {
-    //         return TRIGGER_RUN_COUNT == null ? 0 : ++TRIGGER_RUN_COUNT;
-    //     }
-    //     set {}
-    // }
-
+    private static Integer TRIGGER_RUN_COUNT = 0;
     
     public void run() {
-        System.debug('-----TestObjectTriggerHandler runs!!! Count: ' + TRIGGER_RUN_COUNT++);
+        //System.debug('-----TestObjectTriggerHandler runs!!! Count: ' + TRIGGER_RUN_COUNT++);
         switch on Trigger.operationType {
             when BEFORE_INSERT {
-                this.beforeInsert(Trigger.new);
+                this.beforeInsert();
             }
             when AFTER_INSERT {
-                this.afterInsert(Trigger.newMap);
+                this.afterInsert();
             }
             when BEFORE_UPDATE {
-                this.beforeUpdate(Trigger.new, Trigger.oldMap);
+                this.beforeUpdate();
             }
             when AFTER_UPDATE {
-                this.afterUpdate(Trigger.new, Trigger.oldMap);
+                this.afterUpdate();
             }
             when BEFORE_DELETE {
-                this.beforeDelete(Trigger.oldMap);
+                this.beforeDelete();
             }
             when AFTER_DELETE {
-                this.afterDelete(Trigger.oldMap);
+                this.afterDelete();
             }
             when AFTER_UNDELETE {
-                this.afterUndelete(Trigger.oldMap);
+                this.afterUndelete();
             }
         }
     }
 
-    protected virtual void beforeInsert(List<sObject> newObjectsList) {
+    protected virtual void beforeInsert() {
     }
-    protected virtual void afterInsert(Map<Id, sObject> newObjectsMap) {
+    protected virtual void afterInsert() {
     }
-    protected virtual void beforeUpdate(List<sObject> newObjectsList, Map<Id, sObject> oldObjectsMap) {
+    protected virtual void beforeUpdate() {
     }
-    protected virtual void afterUpdate(List<sObject> newObjectsList, Map<Id, sObject> oldObjectsMap) {
+    protected virtual void afterUpdate() {
     }
-    protected virtual void beforeDelete(Map<Id, sObject> oldObjectsMap) {
+    protected virtual void beforeDelete() {
     }
-    protected virtual void afterDelete(Map<Id, sObject> oldObjectsMap) {
+    protected virtual void afterDelete() {
     }
-    protected virtual void afterUndelete(Map<Id, sObject> oldObjectsMap) {
+    protected virtual void afterUndelete() {
     }
 }

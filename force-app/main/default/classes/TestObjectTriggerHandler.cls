@@ -1,33 +1,34 @@
 public with sharing class TestObjectTriggerHandler extends TriggerHandler {
+    private static Boolean isRecursionBeforeUpdate = false;
+    private static Boolean isRecursionAfterUpdate = false;
 
-    protected override void beforeInsert(List<SObject> newObjectsList) {
-        System.debug('-----beforeInsert');
-    }
-
-    protected override void afterInsert(Map<Id, SObject> newObjectsMap) {
-        System.debug('-----afterInsert');
-    }
-
-    protected override void beforeUpdate(List<SObject> newObjectsList, Map<Id, SObject> oldObjectsMap) {
-        System.debug('-----beforeUpdate');
-        List<TestObject__c> newList = newObjectsList;
-
-        for (TestObject__c testObject : newList) {
-            if (testObject.Name == 'TestTriggerRecursion') {
-                //testObject.TextAreaField__c += '<p>beforeApdate Trigger' + count + '</p>';
-            }
+    protected override void beforeUpdate() {
+        if(isRecursionBeforeUpdate) {
+            return;
         }
+
+        isRecursionBeforeUpdate = true;
+
+        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+
+        testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
     }
 
-    protected override void afterUpdate(List<SObject> newObjectsList, Map<Id, SObject> oldObjectsMap) {
-        System.debug('-----afterUpdate');
-    }
+    protected override void afterUpdate() {
+        if(isRecursionAfterUpdate) {
+            return;
+        }
 
-    protected override void beforeDelete(Map<Id, SObject> oldObjectsMap) {
-        System.debug('-----beforeDelete');
-    }
+        isRecursionAfterUpdate = true;
 
-    protected override void afterDelete(Map<Id, SObject> oldObjectsMap) {
-        System.debug('-----afterDelete');
+        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+
+        update new TestObject__c(
+            Id = testObject.Id, 
+            TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
+        );
+
+        isRecursionBeforeUpdate = false;
+        isRecursionAfterUpdate = false;
     }
 }
