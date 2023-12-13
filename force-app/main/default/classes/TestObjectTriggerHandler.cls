@@ -1,38 +1,34 @@
 public with sharing class TestObjectTriggerHandler extends TriggerHandler {
-
-    protected override void beforeInsert() {
-        System.debug('-----beforeInsert');
-    }
-
-    protected override void afterInsert() {
-        System.debug('-----afterInsert');
-    }
+    private static Boolean isRecursionBeforeUpdate = false;
+    private static Boolean isRecursionAfterUpdate = false;
 
     protected override void beforeUpdate() {
-        System.debug('-----beforeUpdate');
-        List<TestObject__c> newList = Trigger.new;
-
-        for (TestObject__c testObject : newList) {
-            if (testObject.Name.startsWith('TestTriggerRecursion_')) {
-                testObject.TextAreaField__c += '<p>beforeApdate Trigger' + '' + '</p>';
-            }
+        if(isRecursionBeforeUpdate) {
+            return;
         }
-        update new TestObject__c(Id = newList.get(0).Id);
+
+        isRecursionBeforeUpdate = true;
+
+        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+
+        testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
     }
 
     protected override void afterUpdate() {
-        System.debug('-----afterUpdate');
+        if(isRecursionAfterUpdate) {
+            return;
+        }
 
-        //update new TestObject__c(Id = Trigger.new.get(0).Id);
-        //update Trigger.new;
+        isRecursionAfterUpdate = true;
 
-    }
+        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
 
-    protected override void beforeDelete() {
-        System.debug('-----beforeDelete');
-    }
+        update new TestObject__c(
+            Id = testObject.Id, 
+            TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
+        );
 
-    protected override void afterDelete() {
-        System.debug('-----afterDelete');
+        isRecursionBeforeUpdate = false;
+        isRecursionAfterUpdate = false;
     }
 }
