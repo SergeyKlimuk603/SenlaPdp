@@ -17,6 +17,7 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
     }
 
     protected override void afterUpdate() {
+        System.debug('-----afterUpdate');
         if(isRecursionAfterUpdate) {
             return;
         }
@@ -34,6 +35,10 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
                 )
             );
         }    
+
+        update testObjectsForUpdate;
+
+        update testObjectsForUpdate;
 
         update testObjectsForUpdate;
 

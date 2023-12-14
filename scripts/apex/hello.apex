@@ -24,8 +24,9 @@ update testObjectsForUpdate;
 // Update records several times
 Integer UPDATE_TIMES = 3;
 for(Integer i = 0; i < UPDATE_TIMES; i++) {
-    List<TestObject__c> testObjectsForUpdate = [SELECT Id, Name, TextAreaField__c FROM TestObject__c WHERE Name LIKE 'TestTriggerRecursion_%'];
+    List<TestObject__c> testObjectsForUpdate = [SELECT Id, Name, TextAreaField__c FROM TestObject__c WHERE Name LIKE 'TestOrderOfExecution%'];
     for(TestObject__c testObject : testObjectsForUpdate) {
+        testObject.TextAreaField__c = i != 0 ? testObject.TextAreaField__c : '';
         testObject.TextAreaField__c += '<p> updated_' + i + ' </p>';
     }
 
