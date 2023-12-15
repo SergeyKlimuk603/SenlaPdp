@@ -48,6 +48,7 @@ public with sharing class TestObjectTriggerHandler extends TriggerHandler {
             );
         }
 
+        // Этот блок необходим для записи статистики в объект и на логику не влияет
         isDisabled = true;
         update testObjectsForUpdate;
         isDisabled = false;

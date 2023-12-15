@@ -32,3 +32,10 @@ for(Integer i = 0; i < UPDATE_TIMES; i++) {
 
     update testObjectsForUpdate;
 }
+
+//---------------------------------------------------------------------------------------------
+// Two records comparing
+
+TestObject__c testObjectA = new TestObject__c(Name = 'A');
+TestObject__c testObjectB = new TestObject__c(Name = 'A');
+System.debug('-----testObjectA == testObjectB: ' + (testObjectA == testObjectB));
