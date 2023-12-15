@@ -1,34 +1,60 @@
 public with sharing class TestObjectTriggerHandler extends TriggerHandler {
-    private static Boolean isRecursionBeforeUpdate = false;
-    private static Boolean isRecursionAfterUpdate = false;
+    public static Boolean isDisabled = false;
+    private static Integer maxBeforeUpdate = 3;
+    private static Integer countBeforeUpdate = 0;
+    private static Integer maxAfterUpdate = 3;
+    private static Integer countAfterUpdate = 0;
 
     protected override void beforeUpdate() {
-        if(isRecursionBeforeUpdate) {
+        if (isDisabled) {
+            return;
+        }
+     
+        if(countBeforeUpdate >= maxBeforeUpdate || countAfterUpdate >= maxAfterUpdate) {
             return;
         }
 
-        isRecursionBeforeUpdate = true;
+        countBeforeUpdate++;
 
-        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+        List<TestObject__c> testObjects = Trigger.new;
 
-        testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
+        for(TestObject__c testObject : testObjects) {
+            testObject.TextAreaField__c += '<p> beforeUpdateTrigger </p>';
+        }
+
+        countBeforeUpdate--;
     }
 
     protected override void afterUpdate() {
-        if(isRecursionAfterUpdate) {
+        if (isDisabled) {
             return;
         }
 
-        isRecursionAfterUpdate = true;
+        if(countAfterUpdate >= maxAfterUpdate) {
+            return;
+        }
 
-        TestObject__c testObject = (TestObject__c) Trigger.new.get(0);
+        countAfterUpdate++;
 
-        update new TestObject__c(
-            Id = testObject.Id, 
-            TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
-        );
+        List<TestObject__c> testObjects = Trigger.new;
+        List<TestObject__c> testObjectsForUpdate = new List<TestObject__c>();
 
-        isRecursionBeforeUpdate = false;
-        isRecursionAfterUpdate = false;
+        for(TestObject__c testObject : testObjects) {
+            testObjectsForUpdate.add(
+                new TestObject__c(
+                    Id = testObject.Id, 
+                    TextAreaField__c = testObject.TextAreaField__c + '<p> afterUpdateTrigger </p>'
+                )
+            );
+        }
+
+        // Этот блок необходим для записи статистики в объект и на логику не влияет
+        isDisabled = true;
+        update testObjectsForUpdate;
+        isDisabled = false;
+
+        update testObjectsForUpdate;
+        
+        countAfterUpdate--;
     }
 }
