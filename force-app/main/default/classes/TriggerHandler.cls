@@ -1,9 +1,22 @@
 
 public virtual class TriggerHandler {
-    private static Integer TRIGGER_RUN_COUNT = 0;
-    
+    protected final SObjectType OBJEC_TYPE;
+    protected TriggerAction ACTION_TYPE;
+   
+    private static Map<SObjectType, Set<TriggerAction>> runingActions = new Map<SObjectType, Set<TriggerAction>>();
+    public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
+
+    public TriggerHandler() {
+        ACTION_TYPE = getActionType();
+    }
+
     public void run() {
-        //System.debug('-----TestObjectTriggerHandler runs!!! Count: ' + TRIGGER_RUN_COUNT++);
+        if (isTriggerAvailable()) {
+            return;
+        }
+
+        runingActions.get(OBJEC_TYPE).add(ACTION_TYPE);
+        
         switch on Trigger.operationType {
             when BEFORE_INSERT {
                 this.beforeInsert();
@@ -27,6 +40,8 @@ public virtual class TriggerHandler {
                 this.afterUndelete();
             }
         }
+
+        runingActions.get(OBJEC_TYPE).remove(ACTION_TYPE);
     }
 
     protected virtual void beforeInsert() {
@@ -43,4 +58,35 @@ public virtual class TriggerHandler {
     }
     protected virtual void afterUndelete() {
     }
+
+    private Boolean isTriggerAvailable() {
+        if (runingActions.get(OBJEC_TYPE) == null) {
+            runingActions.put(OBJEC_TYPE, new Set<TriggerAction>());
+        }
+
+        return disabledTriggers.contains(OBJEC_TYPE)
+            || runingActions.get(OBJEC_TYPE).contains(ACTION_TYPE);
+    }
+
+    private TriggerAction getActionType() {
+        TriggerAction action;
+        switch on Trigger.operationType {
+            when BEFORE_INSERT, AFTER_INSERT {
+                action = TriggerAction.INSERT_ACTION;
+            }
+            when BEFORE_UPDATE, AFTER_UPDATE {
+                action = TriggerAction.UPDATE_ACTION;
+            }
+            when BEFORE_DELETE, AFTER_DELETE {
+                action = TriggerAction.DELETE_ACTION;
+            }
+            when AFTER_UNDELETE {
+                action = TriggerAction.UNDELETE_ACTION;
+            }
+        }
+
+        return action;
+    }
+
+    public enum TriggerAction {INSERT_ACTION, UPDATE_ACTION, DELETE_ACTION, UNDELETE_ACTION}
 }
