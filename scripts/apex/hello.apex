@@ -43,3 +43,43 @@ System.debug('-----TestObject__c.getSObjectType(): ' + TestObject__c.getSObjectT
 Set<String> strings = new Set<String>{'1', '2', '3'};
 strings.remove('1');
 System.debug('-----strings: ' + strings);
+
+//---------------------------------------------------------------------------------------------
+// Trigger upsert
+
+List<TestObject__c> existObjects = new List<TestObject__c>{
+    new TestObject__c(Name = 'Exist 1 upsert test delete this'),
+    new TestObject__c(Name = 'Exist 2 upsert test delete this'),
+    new TestObject__c(Name = 'Exist 3 upsert test delete this'),
+    new TestObject__c(Name = 'Exist 4 upsert test delete this')
+};
+
+insert existObjects;
+
+List<TestObject__c> forUpsertObjects = new List<TestObject__c>{
+    existObjects.get(0),
+    new TestObject__c(Name = 'New 1 upsert test delete this'),
+    existObjects.get(1),
+    new TestObject__c(Name = 'New 2 upsert test delete this'),
+    existObjects.get(2),
+    new TestObject__c(Name = 'New 3 upsert test delete this'),
+    existObjects.get(3),
+    new TestObject__c(Name = 'New 4 upsert test delete this')
+};
+
+System.debug('-----Start Upsert--------------------------------------------------------------------');
+
+upsert forUpsertObjects;
+
+System.debug('-----End Upsert--------------------------------------------------------------------');
+
+List<TestObject__c> forDeleteObjects = [
+    SELECT Id 
+    FROM TestObject__c
+    WHERE Name LIKE '%delete this'
+];
+
+delete forDeleteObjects;
+
+
+//---------------------------------------------------------------------------------------------

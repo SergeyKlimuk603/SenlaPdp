@@ -1,16 +1,16 @@
 public with sharing class TestObjectParentTriggerHandler extends TriggerHandler {
     public TestObjectParentTriggerHandler() {
-        System.debug('-----TestObjectParentTriggerHandler runs' + '   ' + Trigger.operationType);
+        System.debug('----TestObjectParentTriggerHandler runs' + '   ' + Trigger.operationType);
 
         OBJEC_TYPE = TestObjectParent__c.getSObjectType();
     }
 
     protected override void beforeUpdate() {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
+        System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
     }
 
     protected override void afterUpdate() {
-        System.debug('-----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
+        System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
         
         List<TestObjectParent__c> testObjectParents = Trigger.new;
         

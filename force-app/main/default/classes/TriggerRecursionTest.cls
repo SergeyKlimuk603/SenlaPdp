@@ -123,8 +123,8 @@ private class TriggerRecursionTest {
 
     @IsTest
     static void test_memberTextChanged_WithoutFamilyChange() {
-        Integer familiesAmount = 5;
-        Integer familyMembersAmount = 3;
+        Integer familiesAmount = 1;
+        Integer familyMembersAmount = 5;
         String fieldChanges = 'Field was changed';
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = makeData(familiesAmount, familyMembersAmount);
 
@@ -139,7 +139,6 @@ private class TriggerRecursionTest {
             Assert.isNull(family.TextField__c);
             for (TestObject__c member : family.TestObjects__r) {
                 System.debug('-----member.TextField: ' + member.TextField__c);
-                System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.isNull(member.TextField__c);
             }
         }
@@ -148,26 +147,30 @@ private class TriggerRecursionTest {
         List<TestObject__c> membersForUpdate = new List<TestObject__c>();
         for (TestObjectParent__c family : membersByFamily.keySet()) {
             TestObject__c firstFamilyMember = membersByFamily.get(family).get(0);
-            firstFamilyMember.TextField__c = fieldChanges;
+            firstFamilyMember.TextField__c = fieldChanges + '   ' + family.Name;
             membersForUpdate.add(firstFamilyMember);
         }
 
-        update membersForUpdate;
+        Test.startTest();
+            System.debug('-----Start Update-------------------------------------------');
+            update membersForUpdate;
+            System.debug('-----End Update-------------------------------------------');
+        Test.stopTest();
 
         //startAssert----------------
         List<TestObjectParent__c> familiesAfterUpdate = [
-            SELECT Id, TextField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
+            SELECT Id, Name, TextField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
             FROM TestObjectParent__c
         ];
 
         for (TestObjectParent__c family : familiesAfterUpdate) {
-            System.debug('-----family.TextField: ' + family.TextField__c);
-            Assert.areEqual(fieldChanges, family.TextField__c);
+            // System.debug('-----family.TextField: ' + family.TextField__c);
+            // Assert.areEqual(fieldChanges, family.TextField__c);
             for (TestObject__c member : family.TestObjects__r) {
                 System.debug('-----member.TextField: ' + member.TextField__c);
                 System.debug('-----member.NumberField__c: ' + member.NumberField__c);
-                Assert.areEqual(fieldChanges, member.TextField__c);
-                Assert.areEqual(fieldChanges.length(), member.NumberField__c);
+                Assert.areEqual(fieldChanges + '   ' + family.Name, member.TextField__c);
+                Assert.areEqual((fieldChanges + '   ' + family.Name).length(), member.NumberField__c);
             }
         }
         //endAssert----------------

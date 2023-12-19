@@ -7,7 +7,7 @@ public virtual class TriggerHandler {
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
     public TriggerHandler() {
-        System.debug('-----TriggerHandler constructor runs');
+        System.debug('----TriggerHandler constructor runs');
         ACTION_TYPE = getActionType();
     }
 
@@ -16,31 +16,82 @@ public virtual class TriggerHandler {
             return;
         }
 
-        runingActions.get(OBJEC_TYPE).add(ACTION_TYPE);
+        //runingActions.get(OBJEC_TYPE).add(ACTION_TYPE);
+
+        List<SObject> oldChangedObjects = new List<SObject>();
+        List<SObject> newChangedObjects = new List<SObject>();
         
         switch on Trigger.operationType {
             when BEFORE_INSERT {
-                this.beforeInsert();
+                this.beforeInsert(Trigger.new);
             }
             when AFTER_INSERT {
-                this.afterInsert();
+                this.afterInsert(Trigger.new, Trigger.newMap);
             }
             when BEFORE_UPDATE {
-                this.beforeUpdate();
+                for (SObject record : Trigger.old) {
+                    SObject newRecord = Trigger.newMap.get(record.Id);
+                    if (record != Trigger.newMap.get(record.Id)) {
+                        System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                        System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+                        oldChangedObjects.add(record);
+                        newChangedObjects.add(Trigger.newMap.get(record.Id));
+                    }
+                }
+
+                if (newChangedObjects.isEmpty()) {
+                    return;
+                }
+
+                this.beforeUpdate(newChangedObjects, new Map<Id, SObject>(oldChangedObjects));
             }
             when AFTER_UPDATE {
-                this.afterUpdate();
+                for (SObject record : Trigger.old) {
+                    SObject newRecord = Trigger.newMap.get(record.Id);
+                    if (record != Trigger.newMap.get(record.Id)) {
+                        System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                        System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+                        oldChangedObjects.add(record);
+                        newChangedObjects.add(Trigger.newMap.get(record.Id));
+                    }
+                }
+
+                this.afterUpdate(newChangedObjects, new Map<Id, SObject>(oldChangedObjects));
             }
             when BEFORE_DELETE {
-                this.beforeDelete();
+                this.beforeDelete(Trigger.old, Trigger.oldMap);
             }
             when AFTER_DELETE {
-                this.afterDelete();
+                this.afterDelete(Trigger.old, Trigger.oldMap);
             }
             when AFTER_UNDELETE {
-                this.afterUndelete();
+                this.afterUndelete(Trigger.new, Trigger.newMap);
             }
         }
+
+        // switch on Trigger.operationType {
+        //     when BEFORE_INSERT {
+        //         this.beforeInsert();
+        //     }
+        //     when AFTER_INSERT {
+        //         this.afterInsert();
+        //     }
+        //     when BEFORE_UPDATE {
+        //         this.beforeUpdate();
+        //     }
+        //     when AFTER_UPDATE {
+        //         this.afterUpdate();
+        //     }
+        //     when BEFORE_DELETE {
+        //         this.beforeDelete();
+        //     }
+        //     when AFTER_DELETE {
+        //         this.afterDelete();
+        //     }
+        //     when AFTER_UNDELETE {
+        //         this.afterUndelete();
+        //     }
+        // }
 
         runingActions.get(OBJEC_TYPE).remove(ACTION_TYPE);
     }
@@ -60,12 +111,20 @@ public virtual class TriggerHandler {
     protected virtual void afterUndelete() {
     }
 
+    protected virtual void beforeInsert(List<SObject> newChangedObjects) {}
+    protected virtual void afterInsert(List<SObject> newChangedObjects, Map<Id, SObject> newChangedObjectsMap) {}
+    protected virtual void beforeUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
+    protected virtual void afterUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
+    protected virtual void beforeDelete(List<SObject> oldChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
+    protected virtual void afterDelete(List<SObject> oldChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {}
+    protected virtual void afterUndelete(List<SObject> newChangedObjects, Map<Id, SObject> newChangedObjectsMap) {}
+
     private Boolean isTriggerAvailable() {
         if (runingActions.get(OBJEC_TYPE) == null) {
             runingActions.put(OBJEC_TYPE, new Set<TriggerAction>());
         }
 
-        System.debug('-----runingActions: ' + runingActions);
+        System.debug('----runingActions: ' + runingActions);
 
         return disabledTriggers.contains(OBJEC_TYPE)
             || runingActions.get(OBJEC_TYPE).contains(ACTION_TYPE);
