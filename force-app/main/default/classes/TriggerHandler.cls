@@ -7,6 +7,7 @@ public virtual class TriggerHandler {
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
     public TriggerHandler() {
+        System.debug('-----TriggerHandler constructor runs');
         ACTION_TYPE = getActionType();
     }
 
@@ -63,6 +64,8 @@ public virtual class TriggerHandler {
         if (runingActions.get(OBJEC_TYPE) == null) {
             runingActions.put(OBJEC_TYPE, new Set<TriggerAction>());
         }
+
+        System.debug('-----runingActions: ' + runingActions);
 
         return disabledTriggers.contains(OBJEC_TYPE)
             || runingActions.get(OBJEC_TYPE).contains(ACTION_TYPE);

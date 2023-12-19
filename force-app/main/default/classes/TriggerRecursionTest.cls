@@ -121,6 +121,58 @@ private class TriggerRecursionTest {
         //endAssert----------------
     }
 
+    @IsTest
+    static void test_memberTextChanged_WithoutFamilyChange() {
+        Integer familiesAmount = 5;
+        Integer familyMembersAmount = 3;
+        String fieldChanges = 'Field was changed';
+        Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = makeData(familiesAmount, familyMembersAmount);
+
+        //startAssert----------------
+        List<TestObjectParent__c> familiesBeforeUpdate = [
+            SELECT Id, TextField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
+            FROM TestObjectParent__c
+        ];
+
+        for (TestObjectParent__c family : familiesBeforeUpdate) {
+            System.debug('-----family.TextField: ' + family.TextField__c);
+            Assert.isNull(family.TextField__c);
+            for (TestObject__c member : family.TestObjects__r) {
+                System.debug('-----member.TextField: ' + member.TextField__c);
+                System.debug('-----member.TextField: ' + member.TextField__c);
+                Assert.isNull(member.TextField__c);
+            }
+        }
+        //endAssert----------------
+
+        List<TestObject__c> membersForUpdate = new List<TestObject__c>();
+        for (TestObjectParent__c family : membersByFamily.keySet()) {
+            TestObject__c firstFamilyMember = membersByFamily.get(family).get(0);
+            firstFamilyMember.TextField__c = fieldChanges;
+            membersForUpdate.add(firstFamilyMember);
+        }
+
+        update membersForUpdate;
+
+        //startAssert----------------
+        List<TestObjectParent__c> familiesAfterUpdate = [
+            SELECT Id, TextField__c, (SELECT Id, Name, TextField__c, NumberField__c FROM TestObjects__r)
+            FROM TestObjectParent__c
+        ];
+
+        for (TestObjectParent__c family : familiesAfterUpdate) {
+            System.debug('-----family.TextField: ' + family.TextField__c);
+            Assert.areEqual(fieldChanges, family.TextField__c);
+            for (TestObject__c member : family.TestObjects__r) {
+                System.debug('-----member.TextField: ' + member.TextField__c);
+                System.debug('-----member.NumberField__c: ' + member.NumberField__c);
+                Assert.areEqual(fieldChanges, member.TextField__c);
+                Assert.areEqual(fieldChanges.length(), member.NumberField__c);
+            }
+        }
+        //endAssert----------------
+    }
+
     static Map<TestObjectParent__c, List<TestObject__c>> makeData(Integer familiesAmount, Integer familyMembersAmount){
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = new Map<TestObjectParent__c, List<TestObject__c>>();
 
