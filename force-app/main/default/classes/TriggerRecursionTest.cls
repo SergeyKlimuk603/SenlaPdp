@@ -122,9 +122,13 @@ private class TriggerRecursionTest {
     }
 
     @IsTest
-    static void test_memberTextChanged_WithoutFamilyChange() {
-        Integer familiesAmount = 1;
-        Integer familyMembersAmount = 5;
+    static void test_memberTextChanged_Scenario1() {
+        // После обновления TextField__c у дочернего объекта обновляется поле TextField__c у всех 
+        // дочерних объектов того же родителя. Сам родитель не обновляется.
+        TestObjectTriggerHandler.scenario = TestScenario.SCENARIO_1;
+        TestObjectParentTriggerHandler.scenario = TestScenario.SCENARIO_1;
+        Integer familiesAmount = 25;
+        Integer familyMembersAmount = 3;
         String fieldChanges = 'Field was changed';
         Map<TestObjectParent__c, List<TestObject__c>> membersByFamily = makeData(familiesAmount, familyMembersAmount);
 
@@ -135,10 +139,9 @@ private class TriggerRecursionTest {
         ];
 
         for (TestObjectParent__c family : familiesBeforeUpdate) {
-            System.debug('-----family.TextField: ' + family.TextField__c);
             Assert.isNull(family.TextField__c);
             for (TestObject__c member : family.TestObjects__r) {
-                System.debug('-----member.TextField: ' + member.TextField__c);
+                // System.debug('-----member.TextField: ' + member.TextField__c);
                 Assert.isNull(member.TextField__c);
             }
         }
@@ -164,11 +167,9 @@ private class TriggerRecursionTest {
         ];
 
         for (TestObjectParent__c family : familiesAfterUpdate) {
-            // System.debug('-----family.TextField: ' + family.TextField__c);
-            // Assert.areEqual(fieldChanges, family.TextField__c);
             for (TestObject__c member : family.TestObjects__r) {
-                System.debug('-----member.TextField: ' + member.TextField__c);
-                System.debug('-----member.NumberField__c: ' + member.NumberField__c);
+                // System.debug('-----member.TextField: ' + member.TextField__c);
+                // System.debug('-----member.NumberField__c: ' + member.NumberField__c);
                 Assert.areEqual(fieldChanges + '   ' + family.Name, member.TextField__c);
                 Assert.areEqual((fieldChanges + '   ' + family.Name).length(), member.NumberField__c);
             }

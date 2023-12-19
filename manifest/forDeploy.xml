@@ -5,6 +5,7 @@
         <members>TestObjectTriggerHandler</members>
         <members>TriggerHandler</members>
         <members>TriggerRecursionTest</members>
+        <members>TestScenario</members>
         <name>ApexClass</name>
     </types>
     <types>

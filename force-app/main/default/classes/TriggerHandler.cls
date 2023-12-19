@@ -7,7 +7,7 @@ public virtual class TriggerHandler {
     public static Set<SObjectType> disabledTriggers = new Set<SObjectType>();
 
     public TriggerHandler() {
-        System.debug('----TriggerHandler constructor runs');
+        // System.debug('----TriggerHandler constructor runs');
         ACTION_TYPE = getActionType();
     }
 
@@ -29,15 +29,17 @@ public virtual class TriggerHandler {
                 this.afterInsert(Trigger.new, Trigger.newMap);
             }
             when BEFORE_UPDATE {
+                System.debug('-----start Changed Record Finding before update');
                 for (SObject record : Trigger.old) {
                     SObject newRecord = Trigger.newMap.get(record.Id);
                     if (record != Trigger.newMap.get(record.Id)) {
-                        System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
-                        System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+                        // System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                        // System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
                         oldChangedObjects.add(record);
                         newChangedObjects.add(Trigger.newMap.get(record.Id));
                     }
                 }
+                System.debug('-----end Changed Record Finding before update. records for beforeUpdate: ' + newChangedObjects.size());
 
                 if (newChangedObjects.isEmpty()) {
                     return;
@@ -46,14 +48,21 @@ public virtual class TriggerHandler {
                 this.beforeUpdate(newChangedObjects, new Map<Id, SObject>(oldChangedObjects));
             }
             when AFTER_UPDATE {
+                System.debug('-----start Changed Record Finding after update');
                 for (SObject record : Trigger.old) {
                     SObject newRecord = Trigger.newMap.get(record.Id);
                     if (record != Trigger.newMap.get(record.Id)) {
-                        System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
-                        System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+                        // System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                        // System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
                         oldChangedObjects.add(record);
                         newChangedObjects.add(Trigger.newMap.get(record.Id));
                     }
+                }
+
+                System.debug('-----end Changed Record Finding after update. records for afterUpdate: ' + newChangedObjects.size());
+
+                if (newChangedObjects.isEmpty()) {
+                    return;
                 }
 
                 this.afterUpdate(newChangedObjects, new Map<Id, SObject>(oldChangedObjects));
@@ -124,10 +133,12 @@ public virtual class TriggerHandler {
             runingActions.put(OBJEC_TYPE, new Set<TriggerAction>());
         }
 
-        System.debug('----runingActions: ' + runingActions);
+        //System.debug('----runingActions: ' + runingActions);
 
-        return disabledTriggers.contains(OBJEC_TYPE)
-            || runingActions.get(OBJEC_TYPE).contains(ACTION_TYPE);
+        // return disabledTriggers.contains(OBJEC_TYPE)
+        //     || runingActions.get(OBJEC_TYPE).contains(ACTION_TYPE);
+
+        return disabledTriggers.contains(OBJEC_TYPE);
     }
 
     private TriggerAction getActionType() {

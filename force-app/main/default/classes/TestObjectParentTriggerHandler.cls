@@ -1,15 +1,19 @@
 public with sharing class TestObjectParentTriggerHandler extends TriggerHandler {
+
+    public static TestScenario scenario;
+
     public TestObjectParentTriggerHandler() {
         System.debug('----TestObjectParentTriggerHandler runs' + '   ' + Trigger.operationType);
 
         OBJEC_TYPE = TestObjectParent__c.getSObjectType();
     }
 
-    protected override void beforeUpdate() {
+    protected override void beforeUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
         System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
+
     }
 
-    protected override void afterUpdate() {
+    protected override void afterUpdate(List<SObject> newChangedObjects, Map<Id, SObject> oldChangedObjectsMap) {
         System.debug('----TRIGGER: ' + OBJEC_TYPE + '   ' + Trigger.operationType);
         
         List<TestObjectParent__c> testObjectParents = Trigger.new;
@@ -29,5 +33,18 @@ public with sharing class TestObjectParentTriggerHandler extends TriggerHandler 
         }
 
         update testObjectForUpdate;
+    }
+
+    private void beforeUpdate2() {
+        // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
+        // затем у всех его дочерних объектов.
+
+    }
+
+    private void afterUpdate2() {
+        // После обновления TextField__c у дочернего объекта обновляется TextField__c у родителя и
+        // затем у всех его дочерних объектов.
+
+
     }
 }
