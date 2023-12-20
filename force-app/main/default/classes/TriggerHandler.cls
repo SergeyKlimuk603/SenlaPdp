@@ -32,9 +32,12 @@ public virtual class TriggerHandler {
                 System.debug('-----start Changed Record Finding before update');
                 for (SObject record : Trigger.old) {
                     SObject newRecord = Trigger.newMap.get(record.Id);
-                    if (record != Trigger.newMap.get(record.Id)) {
-                        // System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
-                        // System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+
+                    if (record.clone(false, false, false, false) 
+                        != Trigger.newMap.get(record.Id).clone(false, false, false, false)
+                    ) {
+                        //System.debug('-----recordOld: ' + record.get('Name') + '   '  + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                        //System.debug('-----recordNew: ' + newRecord.get('Name') + '   '  + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
                         oldChangedObjects.add(record);
                         newChangedObjects.add(Trigger.newMap.get(record.Id));
                     }
@@ -51,11 +54,23 @@ public virtual class TriggerHandler {
                 System.debug('-----start Changed Record Finding after update');
                 for (SObject record : Trigger.old) {
                     SObject newRecord = Trigger.newMap.get(record.Id);
-                    if (record != Trigger.newMap.get(record.Id)) {
-                        // System.debug('-----recordOld: ' + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
-                        // System.debug('-----recordNew: ' + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+                    // SObject recordClone = record.clone(false, false, false, false);
+                    // SObject newRecordClone = newRecord.clone(false, false, false, false);
+                    // Map<String, Object> recordMap = record.getPopulatedFieldsAsMap();
+                    // Map<String, Object> newRecordMap = newRecord.getPopulatedFieldsAsMap();
+
+                    // recordClone.put('LastModifiedDate', null);
+                    // newRecordClone.put('LastModifiedDate', null);
+                    // recordMap.remove('LastModifiedDate');
+                    // newRecordMap.remove('LastModifiedDate');
+                    // System.debug('----recordOld: ' + record.get('Name') + '   '  + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                    // System.debug('----recordNew: ' + newRecord.get('Name') + '   '  + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
+                    // System.debug('----areRecordsNotEquals(record, newRecord): ' + areRecordsNotEquals(record, newRecord));
+                    if (areRecordsNotEquals(record, newRecord)) {
+                        // System.debug('----recordOld: ' + record.get('Name') + '   '  + record.get('TextField__c') + '   ' + record.get('NumberField__c'));
+                        // System.debug('----recordNew: ' + newRecord.get('Name') + '   '  + newRecord.get('TextField__c') + '   ' + newRecord.get('NumberField__c'));
                         oldChangedObjects.add(record);
-                        newChangedObjects.add(Trigger.newMap.get(record.Id));
+                        newChangedObjects.add(newRecord);
                     }
                 }
 
@@ -159,6 +174,35 @@ public virtual class TriggerHandler {
         }
 
         return action;
+    }
+
+    private Boolean areRecordsNotEquals(SObject record, SObject newRecord) {
+        List<String> ommitedKeys = new List<String>{
+            'LastModifiedDate',
+            'SystemModstamp'
+        };
+        Map<String, Object> recordMap = record.getPopulatedFieldsAsMap();
+        Map<String, Object> newRecordMap = newRecord.getPopulatedFieldsAsMap();
+        Set<String> allKeys = new Set<String>();
+        allKeys.addAll(recordMap.keySet());
+        allKeys.addAll(newRecordMap.keySet());
+        
+        for (String key : allKeys) {
+            //  System.debug('---recordMap ' + key + ': ' + recordMap.get(key));
+            //  System.debug('---newRecordMap ' + key + ': ' + newRecordMap.get(key));
+            if (ommitedKeys.contains(key)) {
+                continue;
+            }
+
+            if (recordMap.get(key) != newRecordMap.get(key)) {
+                // System.debug('-------key not equal: ' + key);
+                // System.debug('-------recordMap.get(key): ' + recordMap.get(key));
+                // System.debug('-------newRecordMap.get(key): ' + newRecordMap.get(key));
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public enum TriggerAction {INSERT_ACTION, UPDATE_ACTION, DELETE_ACTION, UNDELETE_ACTION}

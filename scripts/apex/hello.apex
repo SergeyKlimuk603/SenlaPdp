@@ -81,5 +81,42 @@ List<TestObject__c> forDeleteObjects = [
 
 delete forDeleteObjects;
 
+//---------------------------------------------------------------------------------------------
+// Map comparing
+Map<String, Object> map1 = new Map<String, Object>{
+    '1' => 1,
+    '2' => '2'
+};
+
+Map<String, Object> map2 = new Map<String, Object>{
+    '1' => 1,
+    '2' => '3'
+};
+
+System.debug('-----map1.equals(map2): ' + map1.equals(map2));
+
+//---------------------------------------------------------------------------------------------
+List<SObject> objects = Database.query('SELECT Id, Name FROM TestObject__c WHERE Name = \'triggerRecursionTest1\'');
+System.debug('-----objects: ' + objects);
+
+List<SObject> objects1 = Database.query('SELECT Id, Name, TextField__c FROM TestObject__c WHERE Name = \'triggerRecursionTest1\'');
+System.debug('-----objects1: ' + objects1);
+
+Map<String, Object> conditions = new Map<String, Object>{
+    'objectName' => 'triggerRecursionTest1'
+};
+List<String> fields = new List<String> {
+    'Id',
+    'Name',
+    'TextField__c'
+};
+String query = 'SELECT ' + String.join(fields, ', ') + ' FROM TestObject__c WHERE Name = :objectName';
+System.debug('-----query: ' + query);
+List<SObject> objects2 = Database.queryWithBinds(query, conditions, AccessLevel.USER_MODE);
+
+System.debug('-----objects2: ' + objects2);
+
+//---------------------------------------------------------------------------------------------
+
 
 //---------------------------------------------------------------------------------------------
