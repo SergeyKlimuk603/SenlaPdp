@@ -1,18 +1,21 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import templateOne from "./lifecycleHooksChildTemplateOne.html";
 import templateTwo from "./lifecycleHooksChildTemplateTwo.html";
 
 export default class LifecycleHooksChild extends LightningElement {
+    @api someAttribute;
     showTemplateOne = true;
     showTemplateTwo = true;
 
     constructor() {
         super();
         console.log('-----lifecycleHooks child constructor()');
+        console.log('-----someAttribute: ', this.someAttribute);
     }
     
     connectedCallback() {
         console.log('-----lifecycleHooks child connectedCallback()');
+        console.log('-----someAttribute: ', this.someAttribute);
     }
     
     renderedCallback() {

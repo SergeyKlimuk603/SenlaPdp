@@ -7,7 +7,9 @@
         <lightning-button variant="brand" slot="actions" label="Button" onclick={handleButton}
             class="slds-m-left_x-small"></lightning-button>
         <template if:true={show}>
-            <c-lifecycle-hooks-child></c-lifecycle-hooks-child>
+            <c-lifecycle-hooks-child
+                some-attribute = "111"
+            ></c-lifecycle-hooks-child>
         </template>
     </lightning-card>
 </template>
