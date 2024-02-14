@@ -12,9 +12,9 @@ export default class PassingInformation1 extends LightningElement {
     myEventHandler(event) {
         console.log('-----myEventHandler()');
         console.log('-----event.variable1_2', event.variable1_2);
-        console.log('-----event.details', event.detail);
-        console.log('-----event.details', event.detail.variable1_2);
-        this.variable2 = event.variable1_2;
+        console.log('-----event.detail', event.detail);
+        console.log('-----event.detail', event.detail.variable1_2);
+        this.variable2 = event.detail.variable1_2;
     }
 
 }
