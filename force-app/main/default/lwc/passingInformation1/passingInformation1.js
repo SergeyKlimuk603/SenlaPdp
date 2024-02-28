@@ -4,6 +4,7 @@ export default class PassingInformation1 extends LightningElement {
 
     variable1 = 'some value1';
     variable2 = 'some value2';
+    objVariable = {val: 'some object Value'};
 
     changeHandler1(event) {
         this.variable1 = event.target.value;
