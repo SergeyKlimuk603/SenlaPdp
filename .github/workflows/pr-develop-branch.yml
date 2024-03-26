@@ -28,7 +28,7 @@ jobs:
       # Устанавливаем nodejs в виртуальную машину и указываем версию 14.
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '21'
  
       # Виртуальная машина может получить доступ к удаленному репозиторию, т.к. репозиторий является проектом sfdx.
       # Это действие по умолчанию, которое позволяет нам войти в корневой каталог репозитория.
@@ -97,6 +97,7 @@ jobs:
         run: |
           mkdir changed-sources
           sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
+          node --trace-warnings
  
       # if: контролирует, следует ли выполнять степ.
       # ${{env}} переменная содержит все переменные, которые были созданы во время выполнения скрипта
