@@ -115,12 +115,19 @@ jobs:
         if: ${{ env.APEX_TESTS == 'all' }}
         run: |
           pwd
+          echo ----
           ls
+          echo ----
           cd changed-sources
+          echo ----
           ls
+          echo ----
           cd force-app
+          echo ----
           ls
+          echo ----
           pwd
+          echo ----
           sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
  
       - name: 'Deploy destructive changes (if any)'
