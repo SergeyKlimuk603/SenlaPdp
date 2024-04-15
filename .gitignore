@@ -51,7 +51,7 @@ $RECYCLE.BIN/
 .prettierrc
 jest.config.js
 package.json
-sfdx-project.json
+# sfdx-project.json
 .husky/pre-commit
 .vscode/extensions.json
 .vscode/launch.json
