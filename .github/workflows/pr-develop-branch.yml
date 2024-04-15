@@ -126,6 +126,18 @@ jobs:
           echo ----
           ls
           echo ----
+          cd main
+          echo ----
+          ls
+          echo ----
+          cd default
+          echo ----
+          ls
+          echo ----
+          cd classes
+          echo ----
+          ls
+          echo ----
           pwd
           echo ----
           sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
