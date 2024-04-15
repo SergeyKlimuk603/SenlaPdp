@@ -117,7 +117,10 @@ jobs:
           pwd
           ls
           cd changed-sources
+          ls
           cd force-app
+          ls
+          pwd
           sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
  
       - name: 'Deploy destructive changes (if any)'
