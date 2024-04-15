@@ -98,7 +98,7 @@ jobs:
           mkdir changed-sources
           sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
           node --trace-warnings
-          echo pwd
+          pwd
 
  
       # if: контролирует, следует ли выполнять степ.
@@ -107,8 +107,8 @@ jobs:
         if: ${{ env.APEX_TESTS != 'all' }}
         run: |
           echo ${{env.APEX_TESTS}}
-          echo pwd
-          echo ls
+          pwd
+          ls
           sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
  
       - name: 'Check-only deploy delta changes - run all tests'
