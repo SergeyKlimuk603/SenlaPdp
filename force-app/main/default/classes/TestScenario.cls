@@ -16,4 +16,5 @@ public enum TestScenario {
     // можно регулировать полем NumberField__c изменяемой записи
     SCENARIO_3
     //Add comment 1
+    //Add comment 2
 }
