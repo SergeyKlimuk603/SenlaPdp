@@ -10,7 +10,7 @@
             <assignToReference>testVariable</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>qwertyu1</stringValue>
+                <stringValue>qwertyu2</stringValue>
             </value>
         </assignmentItems>
     </assignments>
